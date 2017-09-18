@@ -5,13 +5,15 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.LinkedList;
 
+import classes.Team;
+
 public class QuizMaster {
 	private static final int PORT = 11000;
 
 	public static LinkedList<String> players = new LinkedList<String>();
 	public static LinkedList<String> playersNoTeam = new LinkedList<String>();
 	
-	public static LinkedList<String[]> teams = new LinkedList<>();
+	public static LinkedList<Team> teams = new LinkedList<>();
 	
 	public static LinkedList<PrintWriter> writers = new LinkedList<PrintWriter>();
 	

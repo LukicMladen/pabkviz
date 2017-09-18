@@ -7,6 +7,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.xml.bind.DatatypeConverter;
+
+import javafx.scene.paint.Stop;
+
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
@@ -40,6 +43,18 @@ public class PlayerGUI extends JFrame {
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField txtChoosingPlayer;
 
+	private JTextArea textArea;
+
+	private JButton btnSubmitAnswer;
+
+	private JTextArea textAreaQuestion;
+
+	private JLabel lblAnswer;
+
+	private JLabel lblQuestion;
+
+	private JLabel lblYourName;
+
 	/**
 	 * Launch the application.
 	 */
@@ -69,102 +84,6 @@ public class PlayerGUI extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
-		textField = new JTextField();
-		textField.setBounds(10, 31, 86, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		JLabel lblYourName = new JLabel("Your name:");
-		lblYourName.setVisible(false);
-		lblYourName.setBounds(10, 11, 86, 20);
-		contentPane.add(lblYourName);
-
-		txtYourName = new JTextField();
-		txtYourName.setText("");
-		txtYourName.setVisible(false);
-		txtYourName.setColumns(10);
-		txtYourName.setBounds(10, 31, 86, 20);
-		contentPane.add(txtYourName);
-
-		JTextArea textArea = new JTextArea();
-		textArea.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentShown(ComponentEvent e) {
-				Runnable runnable = new Runnable() {
-
-					public void run() {
-						while (true) {
-							String line = null;
-							System.out.println("Thread started!");
-							String[] choose = null;
-							try {
-								line = in.readLine();
-								System.out.println(line);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							if (line.startsWith("[select]")) {
-								line = line.replace("[select]", "");
-								System.out.println(line);
-								choose = line.split("\\|");
-								System.out.println(choose[0]);
-								System.out.println(choose[1]);
-								System.out.println(myName);
-								if (choose[1].equals(myName)) {
-									int response = JOptionPane.showConfirmDialog(null,
-											"Do you want to play with " + choose[0], "Invitation",
-											JOptionPane.YES_NO_OPTION);
-									if (response == JOptionPane.YES_OPTION) {
-										out.println("[yes]" + choose[0] + "|" + choose[1]);
-									} else {
-										out.println("[no]" + choose[0] + "|" + choose[1]);
-									}
-								}
-
-							}
-
-							if (line.startsWith("[yes]")) {
-								line = line.replace("[yes]", "");
-								String[] accepting = line.split("\\|");
-								if (accepting[0].equals(myName)) {
-									JOptionPane.showMessageDialog(null, accepting[1] + " accepted your invite!",
-											"Accepted", JOptionPane.OK_OPTION);
-								}
-							}
-
-							if (line.startsWith("[no]")) {
-								line = line.replace("[no]", "");
-								String[] accepting = line.split("\\|");
-								if (accepting[0].equals(myName)) {
-									JOptionPane.showMessageDialog(null, accepting[1] + " declined your invite!",
-											"Declined", JOptionPane.OK_OPTION);
-								}
-							}
-						}
-					}
-				};
-				Thread t = new Thread(runnable);
-				t.start();
-			}
-		});
-
-		textArea.setEditable(false);
-		textArea.setBounds(184, 29, 401, 118);
-		contentPane.add(textArea);
-		textArea.setVisible(false);
-
-		JRadioButton rdbtnHave = new JRadioButton("I have a team");
-		buttonGroup.add(rdbtnHave);
-		rdbtnHave.setBounds(10, 30, 135, 23);
-		contentPane.add(rdbtnHave);
-		rdbtnHave.setVisible(false);
-
-		JRadioButton rdbtnDontHave = new JRadioButton("I don't have a team");
-		buttonGroup.add(rdbtnDontHave);
-		rdbtnDontHave.setBounds(10, 58, 135, 23);
-		contentPane.add(rdbtnDontHave);
-		rdbtnDontHave.setVisible(false);
 
 		txtChoosingPlayer = new JTextField();
 		txtChoosingPlayer.setBounds(10, 59, 86, 20);
@@ -196,30 +115,170 @@ public class PlayerGUI extends JFrame {
 		contentPane.add(btnChoose);
 		btnChoose.setVisible(false);
 
-		JButton btnRefreshList = new JButton("Refresh");
-		btnRefreshList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				LinkedList<String> players = null;
+		textField = new JTextField();
+		textField.setBounds(10, 31, 86, 20);
+		contentPane.add(textField);
+		textField.setColumns(10);
 
-				try {
-					players = selectTeam(false);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		lblYourName = new JLabel("Your name:");
+		lblYourName.setVisible(false);
+		lblYourName.setBounds(10, 11, 86, 20);
+		contentPane.add(lblYourName);
+
+		txtYourName = new JTextField();
+		txtYourName.setText("");
+		txtYourName.setVisible(false);
+		txtYourName.setColumns(10);
+		txtYourName.setBounds(10, 31, 86, 20);
+		contentPane.add(txtYourName);
+
+		JButton btnDone = new JButton("Done");
+		btnDone.setBounds(340, 158, 89, 23);
+		contentPane.add(btnDone);
+		btnDone.setVisible(false);
+		btnDone.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				String team = JOptionPane.showInputDialog(textArea, "Name of your team:", "Team",
+						JOptionPane.QUESTION_MESSAGE);
+				if (!team.matches("^[A-Z][a-z]+$")) {
+					JOptionPane.showMessageDialog(textArea,
+							"Name of your team must start with a capital letter followed by non-capital letters",
+							"Team", JOptionPane.OK_OPTION, null);
+					return;
+				} else {
+					out.println("[team]" + team + "|" + myName);
 				}
-				String forTextArea = "";
-				for (String string : players) {
-					if (!string.equalsIgnoreCase(lblYourName.getText())) {
-						forTextArea += string + "\n";
-					}
-				}
-				textArea.setText(forTextArea);
 
 			}
 		});
-		btnRefreshList.setBounds(340, 158, 89, 23);
-		contentPane.add(btnRefreshList);
-		btnRefreshList.setVisible(false);
+
+		textArea = new JTextArea();
+		textArea.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				Runnable runnable = new Runnable() {
+					public void run() {
+						while (true) {
+							String line = null;
+							System.out.println("Thread started!");
+							String[] choose = null;
+							try {
+								line = in.readLine();
+								System.out.println(line);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							if (line.startsWith("[Choose]")) {
+								String[] playersToChoose;
+								line = line.replace("[Choose]", "");
+								line = line.replace("[", "");
+								line = line.replace("]", "");
+								playersToChoose = line.split(", ");
+								String forTextArea = "";
+								for (int i = 0; i < playersToChoose.length; i++) {
+									if (!playersToChoose[i].equals(myName)) {
+										forTextArea += playersToChoose[i] + "\n";
+									}
+								}
+								textArea.setText(forTextArea);
+							}
+							if (line.startsWith("[select]")) {
+								line = line.replace("[select]", "");
+								System.out.println(line);
+								choose = line.split("\\|");
+								System.out.println(choose[0]);
+								System.out.println(choose[1]);
+								System.out.println(myName);
+								if (choose[1].equals(myName)) {
+									int response = JOptionPane.showConfirmDialog(textArea,
+											"Do you want to play with " + choose[0], "Invitation",
+											JOptionPane.YES_NO_OPTION);
+									if (response == JOptionPane.YES_OPTION) {
+										out.println("[yes]" + choose[0] + "|" + choose[1]);
+									} else {
+										out.println("[no]" + choose[0] + "|" + choose[1]);
+									}
+								}
+
+							}
+
+							if (line.startsWith("[yes]")) {
+								line = line.replace("[yes]", "");
+								String[] accepting = line.split("\\|");
+								if (accepting[0].equals(myName)) {
+									JOptionPane.showMessageDialog(textArea, accepting[1] + " accepted your invite!",
+											"Accepted", JOptionPane.OK_OPTION);
+								}
+							}
+
+							if (line.startsWith("[no]")) {
+								line = line.replace("[no]", "");
+								String[] accepting = line.split("\\|");
+								if (accepting[0].equals(myName)) {
+									JOptionPane.showMessageDialog(textArea, accepting[1] + " declined your invite!",
+											"Declined", JOptionPane.OK_OPTION);
+								}
+							}
+
+							if (line.startsWith("[taken]")) {
+								line = line.replace("[taken]", "");
+								if (line.equals(myName)) {
+									JOptionPane.showMessageDialog(textArea, "That name is taken!", "Team",
+											JOptionPane.OK_OPTION, null);
+								}
+
+							}
+							if (line.startsWith("[nottaken]")) {
+								line = line.replace("[nottaken]", "");
+								if (line.equals(myName)) {
+									JOptionPane.showMessageDialog(textArea, "The name of your team is accepted!",
+											"Team", JOptionPane.OK_OPTION, null);
+								}
+							}
+							if (line.startsWith("[teamName]")) {
+								line = line.replace("[teamName]", "");
+								String[] teamPlayer = line.split("\\|");
+								System.out.println(teamPlayer[1]);
+								System.out.println(myName);
+								if (teamPlayer[1].equals(myName)) {
+									myTeam = teamPlayer[0];
+									JOptionPane.showMessageDialog(textArea, "The name of your team is " + teamPlayer[0],
+											"Team", JOptionPane.OK_OPTION, null);
+									btnChoose.setVisible(false);
+									txtChoosingPlayer.setVisible(false);
+									lblChoosePlayer.setVisible(false);
+									btnDone.setVisible(false);
+									initializeQuiz();
+								}
+
+							}
+
+						}
+					}
+				};
+				Thread t = new Thread(runnable);
+				t.start();
+			}
+		});
+
+		textArea.setEditable(false);
+		textArea.setBounds(184, 29, 401, 118);
+		contentPane.add(textArea);
+		textArea.setVisible(false);
+
+		JRadioButton rdbtnHave = new JRadioButton("I have a team");
+		buttonGroup.add(rdbtnHave);
+		rdbtnHave.setBounds(10, 30, 135, 23);
+		contentPane.add(rdbtnHave);
+		rdbtnHave.setVisible(false);
+
+		JRadioButton rdbtnDontHave = new JRadioButton("I don't have a team");
+		buttonGroup.add(rdbtnDontHave);
+		rdbtnDontHave.setBounds(10, 58, 135, 23);
+		contentPane.add(rdbtnDontHave);
+		rdbtnDontHave.setVisible(false);
 
 		JButton btnSubmitTeam = new JButton("Submit");
 		btnSubmitTeam.addActionListener(new ActionListener() {
@@ -243,10 +302,10 @@ public class PlayerGUI extends JFrame {
 					btnSubmitTeam.setVisible(false);
 					rdbtnDontHave.setVisible(false);
 					rdbtnHave.setVisible(false);
-					btnRefreshList.setVisible(true);
 					btnChoose.setVisible(true);
 					txtChoosingPlayer.setVisible(true);
 					lblChoosePlayer.setVisible(true);
+					btnDone.setVisible(true);
 
 				}
 				if (rdbtnHave.isSelected()) {
@@ -276,7 +335,7 @@ public class PlayerGUI extends JFrame {
 						return;
 					}
 
-					JOptionPane.showConfirmDialog(null, "/That name is already taken, try again!", "Warning!",
+					JOptionPane.showConfirmDialog(null, "That name is already taken, try again!", "Warning!",
 							JOptionPane.OK_OPTION);
 
 				}
@@ -322,11 +381,44 @@ public class PlayerGUI extends JFrame {
 		btnConnect.setBounds(10, 60, 86, 23);
 		contentPane.add(btnConnect);
 
+		textAreaQuestion = new JTextArea();
+		textAreaQuestion.setBounds(184, 31, 401, 116);
+		contentPane.add(textAreaQuestion);
+		textAreaQuestion.setVisible(false);
+
+		btnSubmitAnswer = new JButton("Submit");
+		btnSubmitAnswer.setVisible(false);
+		btnSubmitAnswer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnSubmitAnswer.setBounds(340, 192, 89, 23);
+		contentPane.add(btnSubmitAnswer);
+
+		textFieldAnswer = new JTextField();
+		textFieldAnswer.setBounds(291, 159, 187, 20);
+		contentPane.add(textFieldAnswer);
+		textFieldAnswer.setColumns(10);
+		textFieldAnswer.setVisible(false);
+
+		lblQuestion = new JLabel("Question");
+		lblQuestion.setBounds(184, 11, 86, 14);
+		contentPane.add(lblQuestion);
+		lblQuestion.setVisible(false);
+
+		lblAnswer = new JLabel("Answer");
+		lblAnswer.setBounds(236, 162, 46, 14);
+		contentPane.add(lblAnswer);
+		lblAnswer.setVisible(false);
+
 	}
 
 	BufferedReader in;
 	PrintWriter out;
 	public String myName;
+	private JTextField textFieldAnswer;
+
+	private String myTeam;
 
 	public void connectToServer(String hexIpAddress) throws Exception {
 		InetAddress iAddress = InetAddress.getByAddress(DatatypeConverter.parseHexBinary(hexIpAddress));
@@ -385,26 +477,13 @@ public class PlayerGUI extends JFrame {
 		out.println("[select]" + myName + "|" + name);
 	}
 
-	public String[] popUpInvite() throws IOException {
-		String line = in.readLine();
-		String[] choosingPlayers = null;
-		if (line.startsWith("[mistake]")) {
-			return null;
-		}
-		if (line.startsWith("[choose]")) {
-			line = line.replace("[choose]", "");
-			choosingPlayers = line.split("\\|");
-			if (myName.equals(choosingPlayers[0])) {
-				JOptionPane.showConfirmDialog(null, "Do you want to play with " + choosingPlayers[1] + " on the team?",
-						"Invite", JOptionPane.YES_NO_OPTION);
-			}
-		}
-		return null;
-	}
+	public void initializeQuiz() {
+		lblYourName.setText("["+myTeam+"]"+myName);
+		textAreaQuestion.setVisible(true);
+		btnSubmitAnswer.setVisible(true);
+		textFieldAnswer.setVisible(true);
+		lblAnswer.setVisible(true);
+		lblQuestion.setVisible(true);
 
-	public void Invite(String inviter, String invited) {
-		if (invited.equals(myName))
-			JOptionPane.showConfirmDialog(null, inviter + " has invited you!");
 	}
-
 }

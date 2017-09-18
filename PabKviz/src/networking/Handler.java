@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+
+import classes.Team;
 
 public class Handler extends Thread {
 	private String name;
@@ -49,23 +52,21 @@ public class Handler extends Thread {
 						QuizMaster.playersNoTeam.add(name);
 					}
 				}
-				out.println("[Choose]" + QuizMaster.playersNoTeam);
+				for (PrintWriter out : QuizMaster.writers) {
+					out.println("[Choose]" + QuizMaster.playersNoTeam);
+				}
 			}
 
 			while (true) {
 
 				String line = in.readLine();
-				if (line.startsWith("[No team]")) {
-					out.println("[Choose]" + QuizMaster.playersNoTeam);
-				}
 
-				else if (line.startsWith("[select]")) {
+				if (line.startsWith("[select]")) {
 					for (PrintWriter out : QuizMaster.writers) {
 						out.println(line);
 					}
 
-				} else
-					out.println("[mistake]");
+				}
 
 				if (line.startsWith("[yes]")) {
 
@@ -75,23 +76,65 @@ public class Handler extends Thread {
 
 					line = line.replace("[yes]", "");
 					String[] team = line.split("\\|");
-					System.out.println(team);
-					if (QuizMaster.teams.isEmpty()) {
-						QuizMaster.teams.add(team);
-						System.out.println(QuizMaster.teams);
-					} else {
-						for (String[] teams : QuizMaster.teams) {
-							for (int i = 0; i < teams.length; i++) {
-								if (teams[i].equals(team[0])) {
-									teams[i + 1] = team[1];
-								} else if (teams[i].equals(team[1])) {
-									teams[i + 1] = team[0];
-								} else
-									QuizMaster.teams.add(team);
-							}
-							System.out.println(teams);
+					QuizMaster.playersNoTeam.remove(team[0]);
+					QuizMaster.playersNoTeam.remove(team[1]);
+
+					for (PrintWriter out : QuizMaster.writers) {
+						out.println("[Choose]" + QuizMaster.playersNoTeam);
+					}
+
+					System.out.println(team[0] + " " + team[1]);
+					boolean done = false;
+					for (Team t : QuizMaster.teams) {
+
+						if (t.getPlayers().contains(team[1])) {
+							t.getPlayers().add(team[0]);
+							done = true;
+						} else if (t.getPlayers().contains(team[0])) {
+							t.getPlayers().add(team[1]);
+							done = true;
 						}
 					}
+					if (!done) {
+						LinkedList<String> players = new LinkedList<>();
+						players.add(team[0]);
+						players.add(team[1]);
+						Team toAdd = new Team(players, 0);
+						QuizMaster.teams.add(toAdd);
+						System.out.println(toAdd.getPlayers());
+					}
+
+				}
+
+				if (line.startsWith("[team]")) {
+					String[] teamPlayer;
+					line = line.replace("[team]", "");
+					teamPlayer = line.split("\\|");
+					System.out.println(teamPlayer);
+					boolean taken = false;
+					for (Team t : QuizMaster.teams) {
+						if (t.getName().equals(teamPlayer[0])) {
+							out.println("[taken]" + teamPlayer[1]);
+							taken = true;
+						}
+					}
+					if (!taken) {
+						for (Team t : QuizMaster.teams) {
+							for (String p : t.getPlayers()) {
+								if (p.equals(teamPlayer[1])) {
+									t.setName(teamPlayer[0]);
+									out.println("[nottaken]" + teamPlayer[1]);
+									for (String p1 : t.getPlayers()) {
+										for (PrintWriter out : QuizMaster.writers) {
+											out.println("[teamName]" + t.getName() + "|" + p1);
+										}
+
+									}
+								}
+							}
+						}
+					}
+					
 
 				}
 			}
