@@ -152,9 +152,27 @@ public class PlayerGUI extends JFrame {
 		});
 
 		textArea = new JTextArea();
-		textArea.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentShown(ComponentEvent e) {
+
+		textArea.setEditable(false);
+		textArea.setBounds(184, 29, 401, 118);
+		contentPane.add(textArea);
+		textArea.setVisible(false);
+
+		JRadioButton rdbtnHave = new JRadioButton("I have a team");
+		buttonGroup.add(rdbtnHave);
+		rdbtnHave.setBounds(10, 30, 135, 23);
+		contentPane.add(rdbtnHave);
+		rdbtnHave.setVisible(false);
+
+		JRadioButton rdbtnDontHave = new JRadioButton("I don't have a team");
+		buttonGroup.add(rdbtnDontHave);
+		rdbtnDontHave.setBounds(10, 58, 135, 23);
+		contentPane.add(rdbtnDontHave);
+		rdbtnDontHave.setVisible(false);
+
+		JButton btnSubmitTeam = new JButton("Submit");
+		btnSubmitTeam.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
 				Runnable runnable = new Runnable() {
 					public void run() {
 						while (true) {
@@ -252,35 +270,19 @@ public class PlayerGUI extends JFrame {
 								}
 
 							}
+							if (line.startsWith("[Question]")) {
+								line = line.replace("[Question]", "");
+								String[] playerQuestion = line.split("\\|");
+								if (playerQuestion[0].equals(myName)) {
+									textAreaQuestion.setText(playerQuestion[1]);
+								}
+							}
 
 						}
 					}
 				};
 				Thread t = new Thread(runnable);
 				t.start();
-			}
-		});
-
-		textArea.setEditable(false);
-		textArea.setBounds(184, 29, 401, 118);
-		contentPane.add(textArea);
-		textArea.setVisible(false);
-
-		JRadioButton rdbtnHave = new JRadioButton("I have a team");
-		buttonGroup.add(rdbtnHave);
-		rdbtnHave.setBounds(10, 30, 135, 23);
-		contentPane.add(rdbtnHave);
-		rdbtnHave.setVisible(false);
-
-		JRadioButton rdbtnDontHave = new JRadioButton("I don't have a team");
-		buttonGroup.add(rdbtnDontHave);
-		rdbtnDontHave.setBounds(10, 58, 135, 23);
-		contentPane.add(rdbtnDontHave);
-		rdbtnDontHave.setVisible(false);
-
-		JButton btnSubmitTeam = new JButton("Submit");
-		btnSubmitTeam.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
 				if (rdbtnDontHave.isSelected()) {
 					LinkedList<String> players = null;
 					try {
@@ -413,44 +415,42 @@ public class PlayerGUI extends JFrame {
 		lblAnswer = new JLabel("Answer");
 		lblAnswer.setBounds(236, 162, 46, 14);
 		contentPane.add(lblAnswer);
-		
+
 		textFieldTeam = new JTextField();
 		textFieldTeam.setBounds(10, 59, 86, 20);
 		contentPane.add(textFieldTeam);
 		textFieldTeam.setColumns(10);
 		textFieldTeam.setVisible(false);
-		
+
 		btnSubmitHaveTeam = new JButton("Submit");
 		btnSubmitHaveTeam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String team = textFieldTeam.getText();
-				if(!team.matches("^[A-Z][a-z]+$")){
+				if (!team.matches("^[A-Z][a-z]+$")) {
 					JOptionPane.showMessageDialog(textArea,
 							"Name of your team must start with a capital letter followed by non-capital letters",
 							"Team", JOptionPane.OK_OPTION, null);
 					return;
-				}else {
-					out.println("[HaveTeam]"+team+"|"+myName);
-					myTeam=team;
+				} else {
+					out.println("[HaveTeam]" + team + "|" + myName);
+					myTeam = team;
 					lblTeamName.setVisible(false);
 					btnSubmitHaveTeam.setVisible(false);
 					textFieldTeam.setVisible(false);
 					initializeQuiz();
-					
-					
+
 				}
 			}
 		});
 		btnSubmitHaveTeam.setBounds(10, 88, 86, 23);
 		contentPane.add(btnSubmitHaveTeam);
 		btnSubmitHaveTeam.setVisible(false);
-		
+
 		lblTeamName = new JLabel("Team name:");
 		lblTeamName.setBounds(10, 45, 86, 14);
 		contentPane.add(lblTeamName);
 		lblTeamName.setVisible(false);
 		lblAnswer.setVisible(false);
-		
 
 	}
 
@@ -522,7 +522,7 @@ public class PlayerGUI extends JFrame {
 	}
 
 	public void initializeQuiz() {
-		lblYourName.setText("["+myTeam+"]"+myName);
+		lblYourName.setText("[" + myTeam + "]" + myName);
 		textAreaQuestion.setVisible(true);
 		btnSubmitAnswer.setVisible(true);
 		textFieldAnswer.setVisible(true);

@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.util.LinkedList;
 
 import classes.Team;
+import gui.QuizMasterGUI;
 
 public class QuizMaster {
 	private static final int PORT = 11000;
@@ -14,11 +15,14 @@ public class QuizMaster {
 	public static LinkedList<String> playersNoTeam = new LinkedList<String>();
 	public static LinkedList<Team> teams = new LinkedList<>();
 	public static LinkedList<PrintWriter> writers = new LinkedList<PrintWriter>();
+
+	public static String hexAddress;
 	public static void main(String[] args) throws Exception {
-
-		String hexAddress = toHexAddress(InetAddress.getLocalHost().getHostAddress());
+		
+		hexAddress = toHexAddress(InetAddress.getLocalHost().getHostAddress());
 		System.out.println("The server is running at: " + hexAddress);
-
+		QuizMasterGUI.main(args);
+		
 		ServerSocket listener = new ServerSocket(PORT);
 		try {
 			while (true) {
