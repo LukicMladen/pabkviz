@@ -31,5 +31,12 @@ public class Team {
 		this.bodovi = bodovi;
 	}
 	
+	public Team(LinkedList<String> players, int bodovi, String name) {
+		super();
+		this.name = name;
+		this.players = players;
+		this.bodovi = bodovi;
+	}
+	
 	
 }

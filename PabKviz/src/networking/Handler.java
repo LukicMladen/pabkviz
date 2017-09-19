@@ -134,8 +134,24 @@ public class Handler extends Thread {
 							}
 						}
 					}
-					
-
+				}
+				
+				if(line.startsWith("[HaveTeam]")){
+					String[] teamPlayer;
+					line=line.replace("[HaveTeam]", "");
+					teamPlayer = line.split("\\|");
+					boolean added = false;
+					for(Team t : QuizMaster.teams){
+						if(t.getName().equals(teamPlayer[0])){
+							t.getPlayers().add(teamPlayer[1]);
+							added = true;
+						}
+					} if(!added) {
+						LinkedList<String> players = new LinkedList<>();
+						players.add(teamPlayer[1]);
+						Team e = new Team(players, 0, teamPlayer[0]);
+						QuizMaster.teams.add(e);
+					}
 				}
 			}
 

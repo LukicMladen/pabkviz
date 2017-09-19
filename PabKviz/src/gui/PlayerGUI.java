@@ -8,8 +8,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.xml.bind.DatatypeConverter;
 
-import javafx.scene.paint.Stop;
-
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
@@ -309,7 +307,12 @@ public class PlayerGUI extends JFrame {
 
 				}
 				if (rdbtnHave.isSelected()) {
-
+					btnSubmitTeam.setVisible(false);
+					rdbtnDontHave.setVisible(false);
+					rdbtnHave.setVisible(false);
+					lblTeamName.setVisible(true);
+					btnSubmitHaveTeam.setVisible(true);
+					textFieldTeam.setVisible(true);
 				}
 			}
 		});
@@ -382,6 +385,7 @@ public class PlayerGUI extends JFrame {
 		contentPane.add(btnConnect);
 
 		textAreaQuestion = new JTextArea();
+		textAreaQuestion.setEditable(false);
 		textAreaQuestion.setBounds(184, 31, 401, 116);
 		contentPane.add(textAreaQuestion);
 		textAreaQuestion.setVisible(false);
@@ -409,7 +413,44 @@ public class PlayerGUI extends JFrame {
 		lblAnswer = new JLabel("Answer");
 		lblAnswer.setBounds(236, 162, 46, 14);
 		contentPane.add(lblAnswer);
+		
+		textFieldTeam = new JTextField();
+		textFieldTeam.setBounds(10, 59, 86, 20);
+		contentPane.add(textFieldTeam);
+		textFieldTeam.setColumns(10);
+		textFieldTeam.setVisible(false);
+		
+		btnSubmitHaveTeam = new JButton("Submit");
+		btnSubmitHaveTeam.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String team = textFieldTeam.getText();
+				if(!team.matches("^[A-Z][a-z]+$")){
+					JOptionPane.showMessageDialog(textArea,
+							"Name of your team must start with a capital letter followed by non-capital letters",
+							"Team", JOptionPane.OK_OPTION, null);
+					return;
+				}else {
+					out.println("[HaveTeam]"+team+"|"+myName);
+					myTeam=team;
+					lblTeamName.setVisible(false);
+					btnSubmitHaveTeam.setVisible(false);
+					textFieldTeam.setVisible(false);
+					initializeQuiz();
+					
+					
+				}
+			}
+		});
+		btnSubmitHaveTeam.setBounds(10, 88, 86, 23);
+		contentPane.add(btnSubmitHaveTeam);
+		btnSubmitHaveTeam.setVisible(false);
+		
+		lblTeamName = new JLabel("Team name:");
+		lblTeamName.setBounds(10, 45, 86, 14);
+		contentPane.add(lblTeamName);
+		lblTeamName.setVisible(false);
 		lblAnswer.setVisible(false);
+		
 
 	}
 
@@ -419,6 +460,9 @@ public class PlayerGUI extends JFrame {
 	private JTextField textFieldAnswer;
 
 	private String myTeam;
+	private JTextField textFieldTeam;
+	private JButton btnSubmitHaveTeam;
+	private JLabel lblTeamName;
 
 	public void connectToServer(String hexIpAddress) throws Exception {
 		InetAddress iAddress = InetAddress.getByAddress(DatatypeConverter.parseHexBinary(hexIpAddress));

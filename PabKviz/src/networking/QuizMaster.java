@@ -12,11 +12,8 @@ public class QuizMaster {
 
 	public static LinkedList<String> players = new LinkedList<String>();
 	public static LinkedList<String> playersNoTeam = new LinkedList<String>();
-	
 	public static LinkedList<Team> teams = new LinkedList<>();
-	
 	public static LinkedList<PrintWriter> writers = new LinkedList<PrintWriter>();
-	
 	public static void main(String[] args) throws Exception {
 
 		String hexAddress = toHexAddress(InetAddress.getLocalHost().getHostAddress());
