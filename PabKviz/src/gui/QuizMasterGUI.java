@@ -74,7 +74,7 @@ public class QuizMasterGUI extends JFrame {
 		btnDone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!(JOptionPane.showConfirmDialog(contentPane,
-						"Are you sure you want to start the quiz?") == JOptionPane.YES_OPTION)) {
+						"Are you sure you want to start the quiz?", "Start Quiz", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION)) {
 					return;
 				} else {
 					textFieldServer.setVisible(false);

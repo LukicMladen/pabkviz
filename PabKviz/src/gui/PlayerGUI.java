@@ -107,7 +107,7 @@ public class PlayerGUI extends JFrame {
 					if (textArea.getText().contains(txtChoosingPlayer.getText()) && !txtChoosingPlayer.getText().isEmpty())
 						selectPlayer(txtChoosingPlayer.getText());
 					else
-						JOptionPane.showConfirmDialog(null, "That person doesn't exist, try again!", "Warning",
+						JOptionPane.showMessageDialog(contentPane, "That person doesn't exist, try again!", "Warning",
 								JOptionPane.OK_OPTION);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -145,7 +145,7 @@ public class PlayerGUI extends JFrame {
 				if (!team.matches("^[A-Z][a-z]+$")) {
 					JOptionPane.showMessageDialog(textArea,
 							"Name of your team must start with a capital letter followed by non-capital letters",
-							"Team", JOptionPane.OK_OPTION, null);
+							"Team", JOptionPane.OK_OPTION);
 					return;
 				} else {
 					out.println("[team]" + team + "|" + myName);
@@ -183,7 +183,6 @@ public class PlayerGUI extends JFrame {
 							String[] choose = null;
 							try {
 								line = in.readLine();
-								System.out.println(line);
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -206,8 +205,8 @@ public class PlayerGUI extends JFrame {
 								choose = line.split("\\|");
 								if (choose[1].equals(myName)) {
 									int response = JOptionPane.showConfirmDialog(textArea,
-											"Do you want to play with " + choose[0], "Invitation",
-											JOptionPane.YES_NO_OPTION);
+											"Do you want to play with " + choose[0]+"?", "Invitation",
+											JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 									if (response == JOptionPane.YES_OPTION) {
 										out.println("[yes]" + choose[0] + "|" + choose[1]);
 									} else {
@@ -222,7 +221,7 @@ public class PlayerGUI extends JFrame {
 								String[] accepting = line.split("\\|");
 								if (accepting[0].equals(myName)) {
 									JOptionPane.showMessageDialog(textArea, accepting[1] + " accepted your invite!",
-											"Accepted", JOptionPane.OK_OPTION);
+											"Accepted", JOptionPane.INFORMATION_MESSAGE);
 								}
 							}
 
@@ -231,7 +230,7 @@ public class PlayerGUI extends JFrame {
 								String[] accepting = line.split("\\|");
 								if (accepting[0].equals(myName)) {
 									JOptionPane.showMessageDialog(textArea, accepting[1] + " declined your invite!",
-											"Declined", JOptionPane.OK_OPTION);
+											"Declined", JOptionPane.ERROR_MESSAGE);
 								}
 							}
 
@@ -239,7 +238,7 @@ public class PlayerGUI extends JFrame {
 								line = line.replace("[taken]", "");
 								if (line.equals(myName)) {
 									JOptionPane.showMessageDialog(textArea, "That name is taken!", "Team",
-											JOptionPane.OK_OPTION, null);
+											JOptionPane.ERROR_MESSAGE);
 								}
 
 							}
@@ -247,7 +246,7 @@ public class PlayerGUI extends JFrame {
 								line = line.replace("[nottaken]", "");
 								if (line.equals(myName)) {
 									JOptionPane.showMessageDialog(textArea, "The name of your team is accepted!",
-											"Team", JOptionPane.OK_OPTION, null);
+											"Team", JOptionPane.INFORMATION_MESSAGE);
 								}
 							}
 							if (line.startsWith("[teamName]")) {
@@ -257,8 +256,8 @@ public class PlayerGUI extends JFrame {
 								System.out.println(myName);
 								if (teamPlayer[1].equals(myName)) {
 									myTeam = teamPlayer[0];
-									JOptionPane.showMessageDialog(textArea, "The name of your team is " + teamPlayer[0],
-											"Team", JOptionPane.OK_OPTION, null);
+									JOptionPane.showMessageDialog(textArea, "The name of your team is " + teamPlayer[0] + "!",
+											"Team", JOptionPane.INFORMATION_MESSAGE);
 									btnChoose.setVisible(false);
 									txtChoosingPlayer.setVisible(false);
 									lblChoosePlayer.setVisible(false);
@@ -325,8 +324,8 @@ public class PlayerGUI extends JFrame {
 			public void mouseClicked(MouseEvent arg0) {
 				String name = txtYourName.getText();
 				if (!name.matches("^[A-Z][a-z]+$")) {
-					JOptionPane.showConfirmDialog(contentPane,
-							"Your name must start with a capital letter \n followed by non-capital letters", "Error!", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(contentPane,
+							"Your name must start with a capital letter \n followed by non-capital letters!", "Error!", JOptionPane.OK_OPTION);
 				} else {
 					try {
 
@@ -380,7 +379,7 @@ public class PlayerGUI extends JFrame {
 					txtYourName.setVisible(true);
 
 				} catch (Exception e) {
-					JOptionPane.showConfirmDialog(null, "Wrong address, try again!", "Warning!", JOptionPane.OK_OPTION);
+					JOptionPane.showMessageDialog(contentPane, "Wrong address, try again!", "Warning!", JOptionPane.OK_OPTION);
 				}
 
 			}
