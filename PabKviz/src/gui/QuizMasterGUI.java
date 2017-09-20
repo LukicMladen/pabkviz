@@ -11,6 +11,7 @@ import networking.QuizMaster;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
@@ -39,6 +40,7 @@ public class QuizMasterGUI extends JFrame {
 				try {
 					QuizMasterGUI frame = new QuizMasterGUI();
 					frame.setVisible(true);
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -97,6 +99,7 @@ public class QuizMasterGUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				Random r = new Random();
 				for (Team t : QuizMaster.teams) {
+					System.out.println(t.getName());
 					int i = r.nextInt(t.getPlayers().size());
 					for (PrintWriter out : QuizMaster.writers) {
 						out.println("[Question]" + t.getPlayers().get(i) + "|" + textAreaQuestion.getText());

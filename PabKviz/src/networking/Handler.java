@@ -46,20 +46,21 @@ public class Handler extends Thread {
 				continue;
 			}
 
-			if (in.readLine().startsWith("[No team]")) {
-				synchronized (QuizMaster.playersNoTeam) {
-					if (!QuizMaster.playersNoTeam.contains(name)) {
-						QuizMaster.playersNoTeam.add(name);
-					}
-				}
-				for (PrintWriter out : QuizMaster.writers) {
-					out.println("[Choose]" + QuizMaster.playersNoTeam);
-				}
-			}
 
 			while (true) {
 
 				String line = in.readLine();
+				
+				if (line.startsWith("[No team]")) {
+					synchronized (QuizMaster.playersNoTeam) {
+						if (!QuizMaster.playersNoTeam.contains(name)) {
+							QuizMaster.playersNoTeam.add(name);
+						}
+					}
+					for (PrintWriter out : QuizMaster.writers) {
+						out.println("[Choose]" + QuizMaster.playersNoTeam);
+					}
+				}
 
 				if (line.startsWith("[select]")) {
 					for (PrintWriter out : QuizMaster.writers) {
@@ -140,6 +141,8 @@ public class Handler extends Thread {
 					String[] teamPlayer;
 					line=line.replace("[HaveTeam]", "");
 					teamPlayer = line.split("\\|");
+					System.out.println(teamPlayer[0]);
+					System.out.println(teamPlayer[1]);
 					boolean added = false;
 					for(Team t : QuizMaster.teams){
 						if(t.getName().equals(teamPlayer[0])){

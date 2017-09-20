@@ -10,6 +10,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +27,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class PlayerGUI extends JFrame {
 
@@ -40,18 +40,20 @@ public class PlayerGUI extends JFrame {
 	private JTextField txtYourName;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField txtChoosingPlayer;
-
 	private JTextArea textArea;
-
 	private JButton btnSubmitAnswer;
-
 	private JTextArea textAreaQuestion;
-
 	private JLabel lblAnswer;
-
 	private JLabel lblQuestion;
-
 	private JLabel lblYourName;
+	private JLabel lblChoosePlayer;
+	private JButton btnChoose;
+	private JButton btnDone;
+	private JRadioButton rdbtnHave;
+	private JRadioButton rdbtnDontHave;
+	private JButton btnSubmitTeam;
+	private JButton btnSubmitAddress;
+	private JLabel lblAddress;
 
 	/**
 	 * Launch the application.
@@ -62,6 +64,7 @@ public class PlayerGUI extends JFrame {
 				try {
 					PlayerGUI frame = new PlayerGUI();
 					frame.setVisible(true);
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -89,16 +92,19 @@ public class PlayerGUI extends JFrame {
 		txtChoosingPlayer.setColumns(10);
 		txtChoosingPlayer.setVisible(false);
 
-		JLabel lblChoosePlayer = new JLabel("Choose player:");
+		lblChoosePlayer = new JLabel("Choose player:");
 		lblChoosePlayer.setBounds(10, 42, 122, 20);
 		contentPane.add(lblChoosePlayer);
 		lblChoosePlayer.setVisible(false);
 
-		JButton btnChoose = new JButton("Choose");
+		btnChoose = new JButton("Choose");
+		btnChoose.setBounds(10, 88, 86, 23);
+		contentPane.add(btnChoose);
+		btnChoose.setVisible(false);
 		btnChoose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					if (textArea.getText().contains(txtChoosingPlayer.getText()))
+					if (textArea.getText().contains(txtChoosingPlayer.getText()) && !txtChoosingPlayer.getText().isEmpty())
 						selectPlayer(txtChoosingPlayer.getText());
 					else
 						JOptionPane.showConfirmDialog(null, "That person doesn't exist, try again!", "Warning",
@@ -109,9 +115,6 @@ public class PlayerGUI extends JFrame {
 				}
 			}
 		});
-		btnChoose.setBounds(10, 88, 86, 23);
-		contentPane.add(btnChoose);
-		btnChoose.setVisible(false);
 
 		textField = new JTextField();
 		textField.setBounds(10, 31, 86, 20);
@@ -130,7 +133,7 @@ public class PlayerGUI extends JFrame {
 		txtYourName.setBounds(10, 31, 86, 20);
 		contentPane.add(txtYourName);
 
-		JButton btnDone = new JButton("Done");
+		btnDone = new JButton("Done");
 		btnDone.setBounds(340, 158, 89, 23);
 		contentPane.add(btnDone);
 		btnDone.setVisible(false);
@@ -152,25 +155,24 @@ public class PlayerGUI extends JFrame {
 		});
 
 		textArea = new JTextArea();
-
 		textArea.setEditable(false);
 		textArea.setBounds(184, 29, 401, 118);
 		contentPane.add(textArea);
 		textArea.setVisible(false);
 
-		JRadioButton rdbtnHave = new JRadioButton("I have a team");
+		rdbtnHave = new JRadioButton("I have a team");
 		buttonGroup.add(rdbtnHave);
 		rdbtnHave.setBounds(10, 30, 135, 23);
 		contentPane.add(rdbtnHave);
 		rdbtnHave.setVisible(false);
 
-		JRadioButton rdbtnDontHave = new JRadioButton("I don't have a team");
+		rdbtnDontHave = new JRadioButton("I don't have a team");
 		buttonGroup.add(rdbtnDontHave);
 		rdbtnDontHave.setBounds(10, 58, 135, 23);
 		contentPane.add(rdbtnDontHave);
 		rdbtnDontHave.setVisible(false);
 
-		JButton btnSubmitTeam = new JButton("Submit");
+		btnSubmitTeam = new JButton("Submit");
 		btnSubmitTeam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Runnable runnable = new Runnable() {
@@ -183,7 +185,6 @@ public class PlayerGUI extends JFrame {
 								line = in.readLine();
 								System.out.println(line);
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							if (line.startsWith("[Choose]")) {
@@ -202,11 +203,7 @@ public class PlayerGUI extends JFrame {
 							}
 							if (line.startsWith("[select]")) {
 								line = line.replace("[select]", "");
-								System.out.println(line);
 								choose = line.split("\\|");
-								System.out.println(choose[0]);
-								System.out.println(choose[1]);
-								System.out.println(myName);
 								if (choose[1].equals(myName)) {
 									int response = JOptionPane.showConfirmDialog(textArea,
 											"Do you want to play with " + choose[0], "Invitation",
@@ -322,32 +319,37 @@ public class PlayerGUI extends JFrame {
 		contentPane.add(btnSubmitTeam);
 		btnSubmitTeam.setVisible(false);
 
-		JButton btnSubmitAddress = new JButton("Submit");
+		btnSubmitAddress = new JButton("Submit");
 		btnSubmitAddress.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				String name = txtYourName.getText();
-				try {
+				if (!name.matches("^[A-Z][a-z]+$")) {
+					JOptionPane.showConfirmDialog(contentPane,
+							"Your name must start with a capital letter \n followed by non-capital letters", "Error!", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					try {
 
-					if (setName1(name)) {
-						lblYourName.setText(name);
-						btnSubmitAddress.setVisible(false);
-						txtYourName.setVisible(false);
-						rdbtnDontHave.setVisible(true);
-						rdbtnHave.setVisible(true);
-						rdbtnHave.setSelected(true);
-						btnSubmitTeam.setVisible(true);
-						return;
+						if (setName1(name)) {
+							lblYourName.setText(name);
+							btnSubmitAddress.setVisible(false);
+							txtYourName.setVisible(false);
+							rdbtnDontHave.setVisible(true);
+							rdbtnHave.setVisible(true);
+							rdbtnHave.setSelected(true);
+							btnSubmitTeam.setVisible(true);
+							return;
+						}
+
+						JOptionPane.showConfirmDialog(null, "That name is already taken, try again!", "Warning!",
+								JOptionPane.OK_OPTION);
+
 					}
 
-					JOptionPane.showConfirmDialog(null, "That name is already taken, try again!", "Warning!",
-							JOptionPane.OK_OPTION);
-
-				}
-
-				catch (IOException e) {
-					JOptionPane.showConfirmDialog(null, "That name is already taken, try again!", "Warning!",
-							JOptionPane.OK_OPTION);
+					catch (IOException e) {
+						JOptionPane.showConfirmDialog(null, "That name is already taken, try again!", "Warning!",
+								JOptionPane.OK_OPTION);
+					}
 				}
 			}
 		});
@@ -360,7 +362,7 @@ public class PlayerGUI extends JFrame {
 		btnSubmitAddress.setBounds(10, 58, 86, 23);
 		contentPane.add(btnSubmitAddress);
 
-		JLabel lblAddress = new JLabel("Address:");
+		lblAddress = new JLabel("Address:");
 		lblAddress.setBounds(10, 11, 86, 20);
 		contentPane.add(lblAddress);
 		JButton btnConnect = new JButton("Connect");
